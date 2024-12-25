@@ -1,11 +1,12 @@
 import random
 
 class Connect4:
-    def __init__(self, rows=6, cols=7):
+    def __init__(self, rows=6, cols=7, p1="human", p2="human"):
         self.rows = rows
         self.cols = cols
         self.board = [[0 for _ in range(cols)] for _ in range(rows)]
         self.current_player = 1
+        self.players = {1: p1, 2: p2}
 
     def make_move(self, col):
         for row in reversed(range(self.rows)):
@@ -48,13 +49,30 @@ class Connect4:
     def get_board_state(self):
         return self.board
 
-    def get_ai_move(self, difficulty="easy"):
+    def get_ai_move(self, difficulty):
         if difficulty == "easy":
+            # Easy AI logic to make random moves
             valid_cols = [col for col in range(self.cols) if self.is_valid_move(col)]
-            return random.choice(valid_cols)
+            if valid_cols:
+                return random.choice(valid_cols)
         elif difficulty == "medium":
-            # Medium AI logic (to be implemented)
-            pass
+            # Medium AI logic to block human moves
+            opponent = 3 - self.current_player
+            for col in range(self.cols):
+                if self.is_valid_move(col):
+                    for row in reversed(range(self.rows)):
+                        if self.board[row][col] == 0:
+                            self.board[row][col] = opponent
+                            if self.check_winner(row, col):
+                                self.board[row][col] = 0  
+                                return col  
+                            self.board[row][col] = 0  
+                            break  
+
+
+        valid_cols = [col for col in range(self.cols) if self.is_valid_move(col)]
+        if valid_cols:
+            return random.choice(valid_cols)
         elif difficulty == "hard":
             # Hard AI logic (to be implemented)
             pass

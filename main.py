@@ -22,11 +22,36 @@ small_font=pygame.font.SysFont("monospace", 40)
 smaller_font=pygame.font.SysFont("monospace", 20)
 
 def display_message(message):
+    """
+    Display a message on the screen.
+
+    This method renders the specified message and displays it at a fixed position
+    on the screen.
+
+    Args:
+        message (str): The message to display on the screen.
+
+    Returns:
+        None
+    """
     label = font.render(message, 1, WHITE)
     screen.blit(label, (40, 10))
     pygame.display.update()
 
 def draw_board(game):
+    """
+    Draw the game board on the screen.
+
+    This method draws the Connect 4 game board on the screen, including the grid and the pieces.
+    It first draws the grid with blue rectangles and black circles, and then it draws the pieces
+    (red and yellow circles) based on the current state of the game board.
+
+    Args:
+        game (Connect4): The Connect 4 game instance containing the board state and dimensions.
+
+    Returns:
+        None
+    """
     for row in range(game.rows):
         SQUARESIZE = min(WIDTH // game.cols, HEIGHT // (game.rows + 1)) 
         RADIUS = int(SQUARESIZE / 2 - 5)
@@ -44,25 +69,57 @@ def draw_board(game):
     pygame.display.update()
 
 def check_draw(game):
+    """
+    Check if the game is a draw.
+
+    This method checks if the game board is full and no more valid moves can be made,
+    indicating that the game has ended in a draw.
+
+    Args:
+        game (Connect4): The Connect 4 game instance containing the board state and dimensions.
+
+    Returns:
+        bool: True if the game is a draw (no valid moves left), False otherwise.
+    """
     for col in range(game.cols):
         if game.is_valid_move(col):
             return False
     return True
 
 def draw_text(text, font, color, surface, x, y):
+    """
+    Draw text on the screen.
+
+    This method renders the specified text using the given font and color,
+    and blits it onto the specified surface at the given coordinates.
+
+    Args:
+        text (str): The text to be rendered and displayed.
+        font (pygame.font.Font): The font to use for rendering the text.
+        color (tuple): The color of the text (e.g., (255, 255, 255) for white).
+        surface (pygame.Surface): The surface to blit the rendered text onto.
+        x (int): The x-coordinate of the top-left corner of the text.
+        y (int): The y-coordinate of the top-left corner of the text.
+
+    Returns:
+        None
+    """
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
 
-def check_draw(game):
-    for col in range(game.cols):
-        if game.is_valid_move(col):
-            return False
-    return True
-
 def main_menu():
+    """
+    Display the main menu and handle user interactions.
+
+    This method displays the main menu with options to play the game, view how to play instructions,
+    or exit the application. It handles user interactions with the menu buttons.
+
+    Returns:
+        None
+    """
     click=False
     while True:
         screen.fill(BLACK)
@@ -105,6 +162,25 @@ def main_menu():
         pygame.display.update()
 
 def draw_small_text(text, font, color, surface, x, y, max_width):
+    """
+    Draw text on the screen with word wrapping.
+
+    This method renders the specified text using the given font and color,
+    and blits it onto the specified surface at the given coordinates. The text
+    is wrapped to fit within the specified maximum width.
+
+    Args:
+        text (str): The text to be rendered and displayed.
+        font (pygame.font.Font): The font to use for rendering the text.
+        color (tuple): The color of the text (e.g., (255, 255, 255) for white).
+        surface (pygame.Surface): The surface to blit the rendered text onto.
+        x (int): The x-coordinate of the top-left corner of the text.
+        y (int): The y-coordinate of the top-left corner of the text.
+        max_width (int): The maximum width of the text before wrapping to a new line.
+
+    Returns:
+        None
+    """
     words = text.split(' ')
     lines = []
     current_line = []
@@ -129,6 +205,15 @@ def draw_small_text(text, font, color, surface, x, y, max_width):
 
 
 def how_to_play():
+    """
+    Display the 'How to Play' screen and handle user interactions.
+
+    This method displays the instructions for playing the game and provides a 'Back' button
+    to return to the main menu. It handles user interactions with the 'Back' button.
+
+    Returns:
+        None
+    """
     while True:
         screen.fill(BLACK)
         draw_text('How to Play 4 in a ROW:', small_font, WHITE, screen, 20, 20)
@@ -156,6 +241,15 @@ def how_to_play():
         pygame.display.update()
 
 def play_menu():
+    """
+    Display the play menu and handle user interactions.
+
+    This method displays the play menu with options to play Player vs Player (PvP) or Player vs Computer (PvC).
+    It also provides a 'Back' button to return to the main menu. It handles user interactions with the menu buttons.
+
+    Returns:
+        None
+    """
     click=False
     while True:
         screen.fill(BLACK)
@@ -169,7 +263,7 @@ def play_menu():
 
         if button_pvp.collidepoint((mx, my)):
             if click:
-                start_game("pvp","pva")
+                choose_table_size("pvp", "human")
         if button_pvc.collidepoint((mx, my)):
             if click:
                 difficulty_menu()
@@ -198,6 +292,20 @@ def play_menu():
 
 
 def choose_table_size(difficulty, first_player):
+    """
+    Display the table size selection menu and handle user interactions.
+
+    This method displays the table size selection menu with options to choose different table sizes.
+    It also provides a 'Back' button to return to the previous menu. It handles user interactions
+    with the menu buttons.
+
+    Args:
+        difficulty (str): The difficulty level of the game.
+        first_player (str): The player who goes first ("human" or "ai").
+
+    Returns:
+        None
+    """
     click = False
     while True:
         screen.fill(BLACK)
@@ -221,7 +329,10 @@ def choose_table_size(difficulty, first_player):
                 start_game(difficulty, first_player, 10, 10)
         if button_back.collidepoint((mx, my)):
             if click:
-                choose_first_player(difficulty)
+                if difficulty == "pvp":
+                    play_menu()
+                else:
+                    choose_first_player(difficulty)
 
         pygame.draw.rect(screen, GREEN, button_6x7)
         pygame.draw.rect(screen, GREEN, button_8x8)
@@ -245,6 +356,19 @@ def choose_table_size(difficulty, first_player):
         pygame.display.update()
 
 def choose_first_player(difficulty):
+    """
+    Display the first player selection menu and handle user interactions.
+
+    This method displays the first player selection menu with options to choose whether the human
+    or the AI goes first. It also provides a 'Back' button to return to the previous menu.
+    It handles user interactions with the menu buttons.
+
+    Args:
+        difficulty (str): The difficulty level of the game.
+
+    Returns:
+        None
+    """
     click = False
     while True:
         screen.fill(BLACK)
@@ -286,6 +410,16 @@ def choose_first_player(difficulty):
         pygame.display.update()
 
 def difficulty_menu():
+    """
+    Display the difficulty selection menu and handle user interactions.
+
+    This method displays the difficulty selection menu with options to choose the game difficulty level.
+    It also provides a 'Back' button to return to the previous menu. It handles user interactions
+    with the menu buttons.
+
+    Returns:
+        None
+    """
     click=False
     while True:
         screen.fill(BLACK)
@@ -333,6 +467,21 @@ def difficulty_menu():
         pygame.display.update()
 
 def start_game(difficulty, first_player, rows=6, cols=7):
+    """
+    Start the game with the specified difficulty, first player, and table size.
+
+    This method initializes the game with the given difficulty, first player, and table size.
+    It handles the game loop, including player and AI moves, checking for a winner, and handling a draw.
+
+    Args:
+        difficulty (str): The difficulty level of the game ("pvp", "easy", "medium", "hard").
+        first_player (str): The player who goes first ("human" or "ai").
+        rows (int, optional): The number of rows in the game board. Defaults to 6.
+        cols (int, optional): The number of columns in the game board. Defaults to 7.
+
+    Returns:
+        None
+    """
     if difficulty == "pvp":
         game = Connect4(rows=rows, cols=cols, p1="human", p2="human")
     else:
@@ -414,4 +563,10 @@ def start_game(difficulty, first_player, rows=6, cols=7):
             pygame.time.wait(7000)  
 
 if __name__ == "__main__":
+    """
+    Main entry point of the application.
+
+    This block of code runs when the script is executed directly. It starts the application
+    by displaying the main menu.
+    """
     main_menu()
